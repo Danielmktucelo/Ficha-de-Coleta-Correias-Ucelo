@@ -4,7 +4,7 @@ Aplicação estática para preenchimento e exportação em PDF da ficha de colet
 
 ## Publicação na Vercel
 
-Este repositório já inclui `vercel.json` para publicar a ficha na raiz do domínio (`/`) apontando para o HTML principal.
+A ficha principal fica em `index.html`, que é o arquivo padrão servido pela Vercel na raiz do domínio (`/`). O arquivo `vercel.json` mantém redirecionamentos de compatibilidade para o nome antigo da ficha.
 
 1. Importe o repositório na Vercel.
 2. Use as configurações padrão de projeto estático, sem comando de build.

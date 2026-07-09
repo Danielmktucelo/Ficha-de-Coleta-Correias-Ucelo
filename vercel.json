@@ -3,8 +3,12 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/",
-      "destination": "/ficha_coleta_correias_ucelo_trechos_status_v2.html"
+      "source": "/ficha_coleta_correias_ucelo_trechos_status_v2",
+      "destination": "/"
+    },
+    {
+      "source": "/ficha_coleta_correias_ucelo_trechos_status_v2.html",
+      "destination": "/"
     }
   ],
   "headers": [
