@@ -38,10 +38,37 @@
   .page {
     max-width: 900px;
     margin: 0 auto;
-    background: #fff;
+    background-color: #fff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='210' height='150' viewBox='0 0 210 150'%3E%3Cg transform='rotate(-28 105 75)'%3E%3Ctext x='105' y='78' text-anchor='middle' font-family='Arial, sans-serif' font-size='26' font-weight='700' fill='%230D2E4A' fill-opacity='.055' letter-spacing='4'%3EUCELO%3C/text%3E%3C/g%3E%3C/svg%3E");
+    background-repeat: repeat;
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 4px 24px rgba(0,0,0,.12);
+    position: relative;
+    isolation: isolate;
+  }
+
+  .page::after {
+    content: "UCELO";
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(13,46,74,.045);
+    font-size: clamp(72px, 16vw, 180px);
+    font-weight: 700;
+    letter-spacing: .24em;
+    transform: rotate(-28deg);
+    text-transform: uppercase;
+    mix-blend-mode: multiply;
+  }
+
+  .page > * {
+    position: relative;
+    z-index: 1;
   }
 
   /* ── HEADER ── */
