@@ -52,12 +52,12 @@
     content: "UCELO";
     position: absolute;
     inset: 0;
-    z-index: 20;
+    z-index: 0;
     pointer-events: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: rgba(13,46,74,.045);
+    color: rgba(13,46,74,.035);
     font-size: clamp(72px, 16vw, 180px);
     font-weight: 700;
     letter-spacing: .24em;
@@ -112,9 +112,49 @@
     font-family: 'DM Mono', monospace;
   }
 
+  .brand-stamp {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(224,123,42,.35);
+    border-radius: 999px;
+    padding: 4px 10px;
+    color: rgba(224,123,42,.82);
+    background: rgba(255,255,255,.74);
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
   /* ── SECTION ── */
-  .section { padding: 0 28px 20px; }
+  .section {
+    padding: 0 28px 20px;
+    position: relative;
+    overflow: hidden;
+  }
   .section + .section { border-top: 1px solid var(--gray-1); }
+  .section::after {
+    content: "UCELO";
+    position: absolute;
+    right: 18px;
+    bottom: 10px;
+    z-index: 0;
+    pointer-events: none;
+    color: rgba(13,46,74,.045);
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: .22em;
+    line-height: 1;
+    transform: rotate(-18deg);
+    text-transform: uppercase;
+  }
+  .section > * {
+    position: relative;
+    z-index: 1;
+  }
 
   .section-header {
     display: flex;
@@ -587,6 +627,8 @@
   body.pdf-exporting .pulley-revestida label { font-size: 9.7px; padding-left: 4px; padding-right: 4px; justify-content: flex-start; min-width: 0; white-space: nowrap; }
   body.pdf-exporting .pulley-revestida input[type=radio] { flex: 0 0 auto; margin-right: 4px; }
   body.pdf-exporting .sketch-area { min-height: 130px; }
+  body.pdf-exporting .section::after { color: rgba(13,46,74,.055); }
+  body.pdf-exporting .brand-stamp { background: rgba(255,255,255,.9); }
   body.pdf-exporting .footer { padding: 15px 26px !important; }
   body.pdf-exporting .page-break { display: none !important; break-before: auto !important; page-break-before: auto !important; }
 
@@ -619,6 +661,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+    flex-wrap: wrap;
   }
   .equipment-title {
     display: flex;
@@ -645,6 +688,10 @@
     font-size: 11px;
     color: var(--gray-3);
     text-align: right;
+  }
+  .equipment-brand {
+    flex: 0 0 auto;
+    opacity: .9;
   }
   .equipment-actions {
     padding: 14px 28px 20px;
@@ -826,6 +873,8 @@
       break-inside: auto;
       page-break-inside: auto;
     }
+    .section::after { color: rgba(13,46,74,.055); }
+    .brand-stamp { background: rgba(255,255,255,.9); }
     .footer { padding: 4mm 7mm; }
   }
 
@@ -836,6 +885,7 @@
     .span2, .span3, .span4 { grid-column: span 1; }
     .header { flex-direction: column; align-items: flex-start; }
     .header-title { text-align: left; }
+    .equipment-brand { order: 3; }
   }
 </style>
 </head>
@@ -907,6 +957,7 @@
     <div class="equipment-panel" data-equipment-index="1">
       <div class="equipment-top">
         <div class="equipment-title"><span>1</span> Equipamento 1</div>
+        <div class="brand-stamp equipment-brand" aria-hidden="true">UCELO</div>
         <div class="equipment-copy-note">Ao adicionar outro equipamento, os dados deste bloco serão copiados automaticamente.</div>
         <div class="equipment-status">
           <label>Condição</label>
@@ -1436,6 +1487,7 @@
         <input type="text" placeholder="Nome">
       </div>
     </div>
+    <div class="brand-stamp footer-brand" aria-hidden="true">UCELO</div>
     <div style="font-size:10px;color:var(--gray-3);text-align:right;line-height:1.6">
       Ucelo Correias Transportadoras<br>
       DOC: CT-001 | Rev. 00
