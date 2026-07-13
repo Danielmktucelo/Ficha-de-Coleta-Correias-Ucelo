@@ -233,15 +233,24 @@
   .toggle-group label {
     flex: 1;
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
-    padding: 7px 8px;
+    padding: 0;
     font-size: 12px;
     font-weight: 500;
     color: var(--gray-4);
     cursor: pointer;
     text-transform: none;
     letter-spacing: 0;
+  }
+  .toggle-group label span {
+    width: 100%;
+    min-height: 32px;
+    padding: 7px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0;
   }
   .toggle-group label + label {
     border-left: 1px solid var(--border);
@@ -250,8 +259,6 @@
   .toggle-group input[type=radio]:checked + span {
     background: var(--blue-dark);
     color: #fff;
-    border-radius: 3px;
-    padding: 2px 8px;
   }
   .toggle-group label:has(input:checked) {
     background: var(--blue-dark);
@@ -400,6 +407,21 @@
     min-height: 28px;
   }
 
+  .summary-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: stretch;
+  }
+  .summary-grid .result-box {
+    min-height: 112px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .no-page-split {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
   /* ── FOOTER ── */
   .footer {
     background: var(--blue-dark);
@@ -537,7 +559,8 @@
   body.pdf-exporting .pulley-row,
   body.pdf-exporting .result-box,
   body.pdf-exporting .notes-area,
-  body.pdf-exporting .sketch-wrap { break-inside: avoid; page-break-inside: avoid; }
+  body.pdf-exporting .sketch-wrap,
+  body.pdf-exporting .no-page-split { break-inside: avoid; page-break-inside: avoid; }
   body.pdf-exporting .field label { font-size: 9.8px; }
   body.pdf-exporting .field-inner { background: #fff; }
   body.pdf-exporting .field-inner input,
@@ -752,7 +775,7 @@
     .g21 { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
     .field, .field-inner, .toggle-group, .pulley-row { min-width: 0; }
 
-    .field, .pulley-row, .result-box, .notes-area, .sketch-wrap {
+    .field, .pulley-row, .result-box, .notes-area, .sketch-wrap, .no-page-split {
       break-inside: avoid;
       page-break-inside: avoid;
     }
@@ -774,7 +797,7 @@
   }
 
   @media (max-width: 600px) {
-    .g2, .g3, .g4 { grid-template-columns: 1fr; }
+    .g2, .g3, .g4, .summary-grid { grid-template-columns: 1fr; }
     .g13, .g31, .g12, .g21 { grid-template-columns: 1fr; }
     .pulley-row { grid-template-columns: 1fr 1fr; }
     .span2, .span3, .span4 { grid-column: span 1; }
@@ -1079,7 +1102,7 @@
   </div>
 
   <!-- ④ MATERIAL TRANSPORTADO -->
-  <div class="section">
+  <div class="section no-page-split">
     <div class="section-header">
       <div class="section-badge">4</div>
       <div class="section-title">Material Transportado</div>
@@ -1335,12 +1358,12 @@
   </div>
 
   <!-- ⑨ RESUMO -->
-  <div class="section">
+  <div class="section no-page-split">
     <div class="section-header">
       <div class="section-badge">9</div>
       <div class="section-title">Resumo de Cálculo e Especificação</div>
     </div>
-    <div class="grid g3">
+    <div class="grid summary-grid">
       <div class="result-box">
         <div class="result-label">Tensão Unitária de Trabalho</div>
         <div class="result-value" id="tensao_result" style="display:flex;align-items:center;gap:6px;">
@@ -1351,7 +1374,7 @@
           T<sub>u</sub> = (P × 1000) ÷ (v × L) — baseado em potência, velocidade e largura
         </div>
       </div>
-      <div class="result-box span2">
+      <div class="result-box">
         <div class="result-label">Correia Recomendada</div>
         <div class="result-value"><input type="text" placeholder="Especificação técnica completa..." style="border:none;background:transparent;width:100%;font-size:14px;font-weight:500;color:var(--blue-dark);outline:none;"></div>
       </div>
@@ -1914,7 +1937,7 @@ function salvarPDF() {
       }
     },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
-    pagebreak: { mode: ['css', 'legacy'], avoid: ['.field', '.pulley-row', '.result-box', '.sketch-wrap', '.equipment-top'] }
+    pagebreak: { mode: ['css', 'legacy'], avoid: ['.field', '.pulley-row', '.result-box', '.sketch-wrap', '.equipment-top', '.no-page-split'] }
   };
 
   requestAnimationFrame(() => {
