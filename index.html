@@ -476,6 +476,18 @@
     break-inside: avoid;
     page-break-inside: avoid;
   }
+  .output-page-break {
+    display: block !important;
+    grid-column: 1 / -1 !important;
+    flex-basis: 100% !important;
+    width: 100% !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    break-before: page !important;
+    page-break-before: always !important;
+  }
 
   /* ── FOOTER ── */
   .footer {
@@ -1957,8 +1969,15 @@ function captureCanvasesForOutput(rootDoc = document) {
 window.addEventListener('beforeprint', function() {
   window._restoreOutputView = prepareOutputView(document);
   window._restoreCanvasView = captureCanvasesForOutput(document);
+  document.body.classList.add('pdf-exporting');
+  window._restoreSmartPageBreaks = applySmartPageBreaks(document);
 });
 window.addEventListener('afterprint', function() {
+  if (typeof window._restoreSmartPageBreaks === 'function') {
+    window._restoreSmartPageBreaks();
+    window._restoreSmartPageBreaks = null;
+  }
+  document.body.classList.remove('pdf-exporting');
   if (typeof window._restoreCanvasView === 'function') {
     window._restoreCanvasView();
     window._restoreCanvasView = null;
@@ -1969,12 +1988,81 @@ window.addEventListener('afterprint', function() {
   }
 });
 
+function applySmartPageBreaks(rootDoc = document) {
+  const root = rootDoc.documentElement || rootDoc;
+  root.querySelectorAll('[data-output-page-break="1"]').forEach((el) => el.remove());
+
+  const page = rootDoc.querySelector('.page');
+  if (!page) return function restoreSmartPageBreaks() {};
+
+  const pageRect = page.getBoundingClientRect();
+  const pageHeight = Math.max(900, pageRect.width * (297 / 210));
+  const selectors = [
+    '.field',
+    '.pulley-row',
+    '.trecho-panel',
+    '.result-box',
+    '.sketch-wrap',
+    '.equipment-top',
+    '.footer',
+    '.no-page-split'
+  ];
+
+  function rowStartFor(el) {
+    const grid = el.closest('.grid');
+    if (!grid) return el;
+    const top = Math.round(el.getBoundingClientRect().top);
+    const rowItems = Array.from(grid.children).filter((child) => {
+      if (child.matches('[data-output-page-break="1"]')) return false;
+      const childTop = Math.round(child.getBoundingClientRect().top);
+      return Math.abs(childTop - top) <= 3;
+    });
+    return rowItems[0] || el;
+  }
+
+  function insertBreakBefore(el) {
+    if (!el || el.previousElementSibling?.matches('[data-output-page-break="1"]')) return false;
+    const br = rootDoc.createElement('div');
+    br.className = 'output-page-break';
+    br.dataset.outputPageBreak = '1';
+    br.setAttribute('aria-hidden', 'true');
+    el.parentNode.insertBefore(br, el);
+    return true;
+  }
+
+  for (let pass = 0; pass < 4; pass += 1) {
+    let changed = false;
+    const items = selectors.flatMap((selector) => Array.from(page.querySelectorAll(selector)));
+    const seen = new Set();
+    items.forEach((item) => {
+      if (seen.has(item) || item.offsetParent === null) return;
+      seen.add(item);
+      const rect = item.getBoundingClientRect();
+      const relativeTop = rect.top - pageRect.top;
+      const relativeBottom = rect.bottom - pageRect.top;
+      const startsOnPage = Math.floor(Math.max(0, relativeTop) / pageHeight);
+      const endsOnPage = Math.floor(Math.max(0, relativeBottom - 1) / pageHeight);
+      const canFitOnPage = rect.height > 0 && rect.height < pageHeight * 0.82;
+      const hasEnoughTop = relativeTop > 24;
+      if (canFitOnPage && hasEnoughTop && endsOnPage > startsOnPage) {
+        changed = insertBreakBefore(rowStartFor(item)) || changed;
+      }
+    });
+    if (!changed) break;
+  }
+
+  return function restoreSmartPageBreaks() {
+    root.querySelectorAll('[data-output-page-break="1"]').forEach((el) => el.remove());
+  };
+}
+
 // ── PDF ───────────────────────────────────────────────────────────────────────
 function salvarPDF() {
   const btn = document.querySelector('.btn-print[onclick="salvarPDF()"]');
   const bar = document.querySelector('.print-bar');
   const restoreCleanOutput = prepareOutputView(document);
   const restoreCanvasOutput = captureCanvasesForOutput(document);
+  let restoreSmartPageBreaks = function() {};
 
   document.body.classList.add('pdf-exporting');
   btn.textContent = 'Gerando PDF...';
@@ -1984,6 +2072,7 @@ function salvarPDF() {
   const page = document.querySelector('.page');
 
   const restorePDFView = () => {
+    restoreSmartPageBreaks();
     restoreCanvasOutput();
     bar.style.display = '';
     document.body.classList.remove('pdf-exporting');
@@ -2036,13 +2125,14 @@ function salvarPDF() {
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
     pagebreak: {
       mode: ['css', 'legacy'],
-      before: ['.equipment-panel:not(:first-child)'],
+      before: ['.equipment-panel:not(:first-child)', '.output-page-break'],
       avoid: ['.field', '.pulley-row', '.result-box', '.sketch-wrap', '.trecho-panel', '.equipment-top', '.footer', '.no-page-split']
     }
   };
 
   requestAnimationFrame(() => {
     setTimeout(() => {
+      restoreSmartPageBreaks = applySmartPageBreaks(document);
       html2pdf().set(opt).from(page).save().then(() => {
         restorePDFView();
       }).catch(() => {
