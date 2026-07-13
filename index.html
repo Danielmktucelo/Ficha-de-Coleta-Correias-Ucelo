@@ -48,6 +48,21 @@
     isolation: isolate;
   }
 
+  .page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='240' viewBox='0 0 72 240'%3E%3Cg transform='translate(36 120) rotate(-90)'%3E%3Ctext x='0' y='0' text-anchor='middle' dominant-baseline='middle' font-family='Arial, sans-serif' font-size='26' font-weight='800' fill='%23E07B2A' fill-opacity='.12' letter-spacing='6'%3EUCELO%3C/text%3E%3C/g%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='240' viewBox='0 0 72 240'%3E%3Cg transform='translate(36 120) rotate(-90)'%3E%3Ctext x='0' y='0' text-anchor='middle' dominant-baseline='middle' font-family='Arial, sans-serif' font-size='26' font-weight='800' fill='%230D2E4A' fill-opacity='.10' letter-spacing='6'%3EUCELO%3C/text%3E%3C/g%3E%3C/svg%3E");
+    background-repeat: repeat-y, repeat-y;
+    background-position: left 10px top 0, right 10px top 120px;
+    background-size: 72px 240px, 72px 240px;
+    mix-blend-mode: multiply;
+  }
+
   .page::after {
     content: "UCELO";
     position: absolute;
@@ -627,6 +642,7 @@
   body.pdf-exporting .pulley-revestida label { font-size: 9.7px; padding-left: 4px; padding-right: 4px; justify-content: flex-start; min-width: 0; white-space: nowrap; }
   body.pdf-exporting .pulley-revestida input[type=radio] { flex: 0 0 auto; margin-right: 4px; }
   body.pdf-exporting .sketch-area { min-height: 130px; }
+  body.pdf-exporting .page::before { opacity: 1; }
   body.pdf-exporting .section::after { color: rgba(13,46,74,.055); }
   body.pdf-exporting .brand-stamp { background: rgba(255,255,255,.9); }
   body.pdf-exporting .footer { padding: 15px 26px !important; }
@@ -873,6 +889,7 @@
       break-inside: auto;
       page-break-inside: auto;
     }
+    .page::before { opacity: 1; }
     .section::after { color: rgba(13,46,74,.055); }
     .brand-stamp { background: rgba(255,255,255,.9); }
     .footer { padding: 4mm 7mm; }
