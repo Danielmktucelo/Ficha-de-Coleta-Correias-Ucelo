@@ -560,12 +560,26 @@
   body.pdf-exporting .result-box,
   body.pdf-exporting .notes-area,
   body.pdf-exporting .sketch-wrap,
+  body.pdf-exporting .trecho-panel,
+  body.pdf-exporting .equipment-top,
+  body.pdf-exporting .footer,
   body.pdf-exporting .no-page-split { break-inside: avoid; page-break-inside: avoid; }
+  body.pdf-exporting .trechos-wrapper { break-inside: auto; page-break-inside: auto; }
+  body.pdf-exporting .equipment-panel { break-inside: auto; page-break-inside: auto; }
+  body.pdf-exporting .equipment-panel + .equipment-panel {
+    break-before: page !important;
+    page-break-before: always !important;
+    margin-top: 0 !important;
+    border-top-color: var(--blue-dark) !important;
+  }
   body.pdf-exporting .field label { font-size: 9.8px; }
   body.pdf-exporting .field-inner { background: #fff; }
   body.pdf-exporting .field-inner input,
   body.pdf-exporting .field-inner select,
   body.pdf-exporting .field-inner textarea { font-size: 12px; padding: 6px 8px; }
+  body.pdf-exporting .toggle-group label span { min-height: 29px; padding: 6px 8px; }
+  body.pdf-exporting .trecho-panel { padding: 8px !important; margin-bottom: 6px !important; background: #fff !important; }
+  body.pdf-exporting .trecho-top { margin-bottom: 6px !important; }
   body.pdf-exporting .pulley-row { background: #fff; grid-template-columns: 144px minmax(132px, 1fr) 50px 208px !important; }
   body.pdf-exporting .pulley-label,
   body.pdf-exporting .pulley-input,
@@ -582,7 +596,6 @@
 
   /* Ajustes de impressão/PDF: evita quebras forçadas e páginas em branco */
   body.pdf-exporting .section,
-  body.pdf-exporting .equipment-panel,
   body.pdf-exporting .grid,
   body.pdf-exporting .inner-divider {
     break-before: auto !important;
@@ -716,6 +729,12 @@
     margin-bottom: 8px;
   }
   .trecho-panel:last-child { margin-bottom: 0; }
+  .trecho-panel,
+  .equipment-top,
+  .footer {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
   .trecho-top {
     display: flex;
     align-items: center;
@@ -786,13 +805,27 @@
 
 
     /* Evita páginas vazias na impressão do navegador */
-    .section, .equipment-panel, .grid, .inner-divider {
+    .section, .grid, .inner-divider {
       break-before: auto !important;
       page-break-before: auto !important;
     }
     .section { padding-bottom: 3mm; }
     .inner-divider { margin: 1mm 0; }
 
+    .equipment-panel + .equipment-panel {
+      break-before: page !important;
+      page-break-before: always !important;
+      margin-top: 0 !important;
+      border-top-color: var(--blue-dark) !important;
+    }
+    .trecho-panel, .equipment-top, .footer {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .trechos-wrapper, .equipment-panel {
+      break-inside: auto;
+      page-break-inside: auto;
+    }
     .footer { padding: 4mm 7mm; }
   }
 
@@ -1937,7 +1970,11 @@ function salvarPDF() {
       }
     },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
-    pagebreak: { mode: ['css', 'legacy'], avoid: ['.field', '.pulley-row', '.result-box', '.sketch-wrap', '.equipment-top', '.no-page-split'] }
+    pagebreak: {
+      mode: ['css', 'legacy'],
+      before: ['.equipment-panel:not(:first-child)'],
+      avoid: ['.field', '.pulley-row', '.result-box', '.sketch-wrap', '.trecho-panel', '.equipment-top', '.footer', '.no-page-split']
+    }
   };
 
   requestAnimationFrame(() => {
